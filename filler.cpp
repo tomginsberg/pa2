@@ -3,7 +3,7 @@
  * Implementation of functions in the filler namespace. 
  *
  */
-//#include "filler.h"
+#include "filler.h"
 
 animation filler::fillStripeDFS(PNG& img, int x, int y, HSLAPixel fillColor,
                                 int stripeSpacing, double tolerance, int frameFreq)

@@ -9,7 +9,7 @@
 #include "colorPicker.h"
 
 /**
- * borderColorPicker: a functor that determines the color that should be used
+ * borderColorPicker: a function that determines the color that should be used
  * given an x and a y coordinate. If the given position is near a border of 
  * the fill, then it should be colored with the given color. Otherwise, its color
  * should not change.

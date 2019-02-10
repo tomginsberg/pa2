@@ -48,7 +48,7 @@ void Queue<T>::add(const T& theItem)
 template <class T>
 T Queue<T>::remove()
 {
-    this->dequeue();
+    return this->dequeue();
 }
 
 /**

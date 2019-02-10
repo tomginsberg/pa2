@@ -116,9 +116,11 @@ animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
         }
 
         for (PVector neighbour : currPos.neighbours()){
-            //if the pixel is not the target color and he have not seen it already
-            if(*img.getPixel(static_cast<unsigned int>(neighbour.x), static_cast<unsigned int>(neighbour.y)) != fillColor.operator()(neighbour.x, neighbour.y)
-            and visited.count(neighbour) == 0){
+            //if operator returns the target color and he have not seen the pixel already
+	    //the fill color check is only really useful for the border fill and will probably just slow down the other algorithms
+
+            if(*img.getPixel(static_cast<unsigned int>(neighbour.x), static_cast<unsigned int>(neighbour.y)) == fillColor.operator()(neighbour.x, neighbour.y)
+                        and visited.count(neighbour) == 0){
                 visited.insert(neighbour);
                 pos.add(neighbour);
             }

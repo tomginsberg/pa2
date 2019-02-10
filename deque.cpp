@@ -1,3 +1,5 @@
+#include "deque.h"
+
 /**
  * @file deque.cpp
  * Implementation of the Deque class.
@@ -20,9 +22,7 @@ Deque<T>::Deque(){
 template <class T>
 void Deque<T>::pushR(T const& newItem)
 {
-    /**
-     * @todo Your code here!
-     */
+    this->data.push_back(newItem);
 }
 
 /**
@@ -36,9 +36,9 @@ void Deque<T>::pushR(T const& newItem)
 template <class T>
 T Deque<T>::popL()
 {
-    /**
-     * @todo Your code here! 
-     */
+    T elm = this->data.front();
+    this->data.erase(this->data.begin());
+    return elm;
     
 }
 /**
@@ -50,10 +50,9 @@ T Deque<T>::popL()
 template <class T>
 T Deque<T>::popR()
 {
-    /**
-     * @todo Your code here! 
-     */
-
+    T elm = this->data.back();
+    this->data.pop_back();
+    return elm;
 }
 
 /**
@@ -65,10 +64,7 @@ T Deque<T>::popR()
 template <class T>
 T Deque<T>::peekL()
 {
-    /**
-     * @todo Your code here! 
-     */
-
+    return this->data.front();
 }
 
 /**
@@ -80,9 +76,7 @@ T Deque<T>::peekL()
 template <class T>
 T Deque<T>::peekR()
 {
-    /**
-     * @todo Your code here! 
-     */
+    return this->data.back();
 }
 
 /**
@@ -93,7 +87,5 @@ T Deque<T>::peekR()
 template <class T>
 bool Deque<T>::isEmpty() const
 {
-    /**
-     * @todo Your code here! 
-     */
+    return this->data.empty();
 }

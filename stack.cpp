@@ -12,9 +12,7 @@
 template<class T>
 void Stack<T>::push(T const & newItem)
 {
-    /**
-     * @todo Your code here!
-     */
+    this->myStack.pushR(newItem);
 }
 
 /**
@@ -27,10 +25,7 @@ void Stack<T>::push(T const & newItem)
 template <class T>
 T Stack<T>::pop()
 {
-    /**
-     * @todo Your code here! 
-     */
-    
+    return this->myStack.popR();
 }
 
 /**
@@ -41,10 +36,7 @@ T Stack<T>::pop()
 template <class T>
 void Stack<T>::add(const T& theItem)
 {
-    /**
-     * @todo Your code here! Hint: this should call another Stack function
-     *  to add the element to the Stack.
-     */
+    this->push(theItem);
 }
 
 /**
@@ -55,10 +47,7 @@ void Stack<T>::add(const T& theItem)
 template <class T>
 T Stack<T>::remove()
 {
-    /**
-     * @todo Your code here! Hint: this should call another Stack function
-     *  to remove an element from the Stack and return it. 
-     */
+    return this->pop();
 }
 
 /**
@@ -72,9 +61,7 @@ T Stack<T>::remove()
 template <class T>
 T Stack<T>::peek()
 {
-    /**
-     * @todo Your code here! 
-     */
+    return this->myStack.peekR();
 }
 
 /**
@@ -85,7 +72,5 @@ T Stack<T>::peek()
 template <class T>
 bool Stack<T>::isEmpty() const
 {
-    /**
-     * @todo Your code here! 
-     */
+    return this->myStack.isEmpty();
 }

@@ -2,10 +2,11 @@
 
 stripeColorPicker::stripeColorPicker(HSLAPixel fillColor, int stripeSpacing)
 {
-/* your code here! */
+    this->color = fillColor;
+    this->spacing = stripeSpacing;
 }
 
 HSLAPixel stripeColorPicker::operator()(int x, int y)
 {
-/* your code here! */
+//TODO: Implement this
 }

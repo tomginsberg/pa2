@@ -2,12 +2,13 @@
 
 borderColorPicker::borderColorPicker(HSLAPixel fillColor, PNG & img, double tolerance, HSLAPixel center)
 {
-/* Your code here! */
+    this->color = fillColor;
+    this->im = img;
+    this->tol = tolerance;
+    this->ctr = center;
 }
 
 HSLAPixel borderColorPicker::operator()(int x, int y)
 {
-
-/* Your code here! */
-    
+//TODO: Implement this
 }

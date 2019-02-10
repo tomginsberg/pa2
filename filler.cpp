@@ -3,22 +3,101 @@
  * Implementation of functions in the filler namespace. 
  *
  */
+
+#include <stack>
+#include <unordered_set>
 #include "filler.h"
+
+using namespace std;
+
+/**
+ 1. If target-color is equal to replacement-color, return.
+ 2. If the color of node is not equal to target-color, return.
+ 3. Set the color of node to replacement-color.
+ 4. Perform Flood-fill (one step to the south of node, target-color, replacement-color).
+    Perform Flood-fill (one step to the north of node, target-color, replacement-color).
+    Perform Flood-fill (one step to the west of node, target-color, replacement-color).
+    Perform Flood-fill (one step to the east of node, target-color, replacement-color).
+ 5. Return.
+ */
+
+
+/**
+ * Simple vector datatype to help with image traversal
+ */
+struct PVector{
+    int x;
+    int y;
+    PVector(int x, int y){
+        this->x = x;
+        this->y = y;
+    }
+    vector<PVector*> neighbours(){
+        vector<PVector*> nb;
+        nb.push_back(new PVector(x + 1, y));
+        nb.push_back(new PVector(x - 1, y ));
+        nb.push_back(new PVector(x , y + 1));
+        nb.push_back(new PVector(x , y - 1));
+        return nb;
+    }
+
+    bool operator==(PVector* other){
+        return this->x == other->x and this->y == other->y;
+    }
+
+};
 
 animation filler::fillStripeDFS(PNG& img, int x, int y, HSLAPixel fillColor,
                                 int stripeSpacing, double tolerance, int frameFreq)
 {
-    /**
-     * @todo Your code here! 
-     */
+
+
 }
 
 animation filler::fillBorderDFS(PNG& img, int x, int y,
                                     HSLAPixel borderColor, double tolerance, int frameFreq)
 {
-    /**
-     * @todo Your code here! 
-     */
+    PNG currFrame = img;
+    animation anim;
+    borderColorPicker border(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x),
+                                                                     static_cast<unsigned int>(y)));
+
+    //this stack is probably better then ours...
+    Stack<PVector*> pos;
+    Stack<PNG> imStack;
+
+    imStack.push(currFrame);
+
+    int resCheck = 0;
+    unordered_set<PVector*> visited;
+    PNG nextFrame;
+
+    PVector* currLoc = new PVector(x,y);
+    pos.push(currLoc);
+    visited.insert(currLoc);
+
+    while(!pos.isEmpty()){
+
+        PVector * currPos = pos.remove();
+        nextFrame = imStack.remove();
+        resCheck++;
+        if (resCheck == frameFreq){
+            resCheck = 0;
+            anim.addFrame(nextFrame);//hopefully not copying wont fuck me
+        }
+
+        for (PVector* neighbour : currPos->neighbours()){
+            currLoc = new PVector(neighbour->x,neighbour->y);
+            if (visited.count(currPos) == 0){
+                visited.insert(currPos);
+                if(borderColor == border.operator()(neighbour->x,neighbour->y){
+                    pos.push(currPos);
+                    currFrame.getPixel(static_cast<unsigned int>(neighbour->x), static_cast<unsigned int>(neighbour->y)) = fillColor;
+                    imStack.push(*new PNG(currFrame));
+                }
+            }
+        }
+    }
 }
 
 /* Given implementation of a DFS rainbow fill. */
@@ -126,4 +205,4 @@ animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
      *        it will be the one we test against.
      */
 
-} 
+}

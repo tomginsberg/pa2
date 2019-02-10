@@ -1,6 +1,6 @@
 #include "borderColorPicker.h"
 
-borderColorPicker::borderColorPicker(HSLAPixel fillColor, PNG & img, double tolerance,HSLAPixel center)
+borderColorPicker::borderColorPicker(HSLAPixel fillColor, PNG & img, double tolerance, HSLAPixel center)
 {
 /* Your code here! */
 }

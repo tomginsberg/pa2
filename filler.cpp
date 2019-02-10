@@ -5,7 +5,7 @@
  */
 
 #include "filler.h"
-
+#include <unordered_set>
 using namespace std;
 
 
@@ -18,10 +18,22 @@ struct PVector{
     PVector(int x, int y) : x{x}, y{y}{};
     vector<PVector> neighbours(){
         vector<PVector> nb;
-        nb.emplace_back(x + 1, y);//lets just hope we dont exceed the width
-        if (x > 0) nb.emplace_back(x - 1, y);
-        nb.emplace_back(x , y + 1);//and here
-        if (y > 0) nb.emplace_back(x , y - 1);
+        /**
+         * UPRIGHT(+x,-y), UP(-y), UPLEFT(-x,-y), LEFT(-x), 
+         * DOWNLEFT(-x,+y), DOWN(+y), DOWNRIGHT(+x,+y), RIGHT(+x)
+         */
+        if (y > 0) {
+            nb.push_back(PVector(x+1,y-1));
+            nb.push_back(PVector(x,y-1));
+        }
+        if (x > 0){ 
+            nb.push_back(PVector(x-1, y-1));
+            nb.push_back(PVector(x-1, y));
+            nb.push_back(PVector(x-1, y+1));
+        }
+        nb.push_back(PVector(x , y + 1));
+        nb.push_back(PVector(x+1 , y +1));
+        nb.push_back(PVector(x+1 , y));
         return nb;
     }
 
@@ -42,35 +54,33 @@ animation filler::fillBorderDFS(PNG& img, int x, int y,
                                     HSLAPixel borderColor, double tolerance, int frameFreq)
 {
     animation anim;
-    borderColorPicker border = borderColorPicker(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x),
+    anim.addFrame(img);
+    borderColorPicker border(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x),
                                                                      static_cast<unsigned int>(y)));
     Stack<PVector> pos;
-    Stack<PNG> imStack;
-
-    imStack.push(img);
-
+    unordered_set<PVector> visited;
     int resCheck = 0;
 
-    PNG nextFrame;
-
     pos.push(PVector(x,y));
-
+    visited.insert(PVector(x,y));
+    
     while(!pos.isEmpty()){
 
         PVector currPos = pos.remove();
-        nextFrame = imStack.remove();
+        //are we allowed to modify the original image?
+        *img.getPixel(static_cast<unsigned int>(currPos.x), static_cast<unsigned int>(currPos.y)) = borderColor;
+        //we mark pixels by setting them to the border color, but
+
         resCheck++;
         if (resCheck == frameFreq){
             resCheck = 0;
-            anim.addFrame(nextFrame);//hopefully not copying wont fuck me
+            anim.addFrame(img);
         }
 
         for (PVector neighbour : currPos.neighbours()){
-            if(borderColor == border.operator()(neighbour.x,neighbour.y){
-                //image is passed by reference, so the operator should keep track of the image being updated
-                pos.push(currPos);
-                currFrame.getPixel(static_cast<unsigned int>(neighbour.x), static_cast<unsigned int>(neighbour.y)) = fillColor;
-                imStack.push(currFrame);//also here
+            if(borderColor == border.operator()(neighbour.x,neighbour.y) and visited.count(PVector(neighbour.x,neighbour.y)) == 0){
+                visited.insert(PVector(neighbour.x,neighbour.y));
+                pos.push(neighbour);
             }
         }
     }
@@ -100,30 +110,28 @@ animation filler::fillBorderBFS(PNG& img, int x, int y,
     anim.addFrame(img);
     borderColorPicker border(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x),
                                                                                            static_cast<unsigned int>(y)));
-
-    //this stack is probably better then ours...
     Queue<PVector> pos;
-
+    unordered_set<PVector> visited;
     int resCheck = 0;
 
-    PNG nextFrame;
-
+    visited.insert(PVector(x,y));
     pos.enqueue(PVector(x,y));
 
     while(!pos.isEmpty()){
 
         PVector currPos = pos.remove();
 
+        *img.getPixel(static_cast<unsigned int>(currPos.x), static_cast<unsigned int>(currPos.y)) = borderColor;
+        resCheck++;
+        if (resCheck == frameFreq){
+            resCheck = 0;
+            anim.addFrame(img);
+        }
+
         for (PVector neighbour : currPos.neighbours()){
-            if(borderColor == border.operator()(neighbour.x,neighbour.y){
-                //image is passed by reference, so the operator should keep track of the image being updated
-                pos.push(currPos);
-                currFrame.getPixel(static_cast<unsigned int>(neighbour->x), static_cast<unsigned int>(neighbour->y)) = fillColor;
-                resCheck++;
-                if (resCheck == frameFreq){
-                    resCheck = 0;
-                    anim.addFrame(nextFrame);//hopefully not copying wont fuck me
-                }
+            if(borderColor == border.operator()(neighbour.x,neighbour.y) and visited.count(PVector(neighbour.x,neighbour.y)) == 0){
+                visited.insert(PVector(neighbour.x,neighbour.y));
+                pos.enqueue(neighbour);
             }
         }
     }

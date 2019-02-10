@@ -4,13 +4,10 @@
  *
  */
 
-#include <stack>
-#include <unordered_set>
 #include "filler.h"
 
 using namespace std;
 
-//Work in filler branch
 
 /**
  * Simple vector datatype to help with image traversal
@@ -18,21 +15,18 @@ using namespace std;
 struct PVector{
     int x;
     int y;
-    PVector(int x, int y){
-        this->x = x;
-        this->y = y;
-    }
-    vector<PVector*> neighbours(){
-        vector<PVector*> nb;
-        nb.push_back(new PVector(x + 1, y));
-        nb.push_back(new PVector(x - 1, y ));
-        nb.push_back(new PVector(x , y + 1));
-        nb.push_back(new PVector(x , y - 1));
+    PVector(int x, int y) : x{x}, y{y}{};
+    vector<PVector> neighbours(){
+        vector<PVector> nb;
+        nb.emplace_back(x + 1, y);//lets just hope we dont exceed the width
+        if (x > 0) nb.emplace_back(x - 1, y);
+        nb.emplace_back(x , y + 1);//and here
+        if (y > 0) nb.emplace_back(x , y - 1);
         return nb;
     }
 
-    bool operator==(PVector* other){
-        return this->x == other->x and this->y == other->y;
+    bool operator==(PVector other){
+        return this->x == other.x and this->y == other.y;
     }
 
 };
@@ -47,28 +41,23 @@ animation filler::fillStripeDFS(PNG& img, int x, int y, HSLAPixel fillColor,
 animation filler::fillBorderDFS(PNG& img, int x, int y,
                                     HSLAPixel borderColor, double tolerance, int frameFreq)
 {
-    PNG currFrame = img;
     animation anim;
-    borderColorPicker border(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x),
+    borderColorPicker border = borderColorPicker(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x),
                                                                      static_cast<unsigned int>(y)));
-
-    //this stack is probably better then ours...
-    Stack<PVector*> pos;
+    Stack<PVector> pos;
     Stack<PNG> imStack;
 
-    imStack.push(currFrame);
+    imStack.push(img);
 
     int resCheck = 0;
-    unordered_set<PVector*> visited;
+
     PNG nextFrame;
 
-    PVector* currLoc = new PVector(x,y);
-    pos.push(currLoc);
-    visited.insert(currLoc);
+    pos.push(PVector(x,y));
 
     while(!pos.isEmpty()){
 
-        PVector * currPos = pos.remove();
+        PVector currPos = pos.remove();
         nextFrame = imStack.remove();
         resCheck++;
         if (resCheck == frameFreq){
@@ -76,19 +65,17 @@ animation filler::fillBorderDFS(PNG& img, int x, int y,
             anim.addFrame(nextFrame);//hopefully not copying wont fuck me
         }
 
-        for (PVector* neighbour : currPos->neighbours()){
-            currLoc = new PVector(neighbour->x,neighbour->y);
-            if (visited.count(currPos) == 0){
-                visited.insert(currPos);
-                if(borderColor == border.operator()(neighbour->x,neighbour->y){
-                    pos.push(currPos);
-                    currFrame.getPixel(static_cast<unsigned int>(neighbour->x), static_cast<unsigned int>(neighbour->y)) = fillColor;
-                    imStack.push(*new PNG(currFrame));
-                }
+        for (PVector neighbour : currPos.neighbours()){
+            if(borderColor == border.operator()(neighbour.x,neighbour.y){
+                //image is passed by reference, so the operator should keep track of the image being updated
+                pos.push(currPos);
+                currFrame.getPixel(static_cast<unsigned int>(neighbour.x), static_cast<unsigned int>(neighbour.y)) = fillColor;
+                imStack.push(currFrame);//also here
             }
         }
     }
 }
+
 
 /* Given implementation of a DFS rainbow fill. */
 animation filler::fillRainDFS(PNG& img, int x, int y,
@@ -109,9 +96,37 @@ animation filler::fillStripeBFS(PNG& img, int x, int y, HSLAPixel fillColor,
 animation filler::fillBorderBFS(PNG& img, int x, int y,
                                     HSLAPixel borderColor, double tolerance, int frameFreq)
 {
-    /**
-     * @todo Your code here! You should replace the following line with a
-     */
+    animation anim;
+    anim.addFrame(img);
+    borderColorPicker border(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x),
+                                                                                           static_cast<unsigned int>(y)));
+
+    //this stack is probably better then ours...
+    Queue<PVector> pos;
+
+    int resCheck = 0;
+
+    PNG nextFrame;
+
+    pos.enqueue(PVector(x,y));
+
+    while(!pos.isEmpty()){
+
+        PVector currPos = pos.remove();
+
+        for (PVector neighbour : currPos.neighbours()){
+            if(borderColor == border.operator()(neighbour.x,neighbour.y){
+                //image is passed by reference, so the operator should keep track of the image being updated
+                pos.push(currPos);
+                currFrame.getPixel(static_cast<unsigned int>(neighbour->x), static_cast<unsigned int>(neighbour->y)) = fillColor;
+                resCheck++;
+                if (resCheck == frameFreq){
+                    resCheck = 0;
+                    anim.addFrame(nextFrame);//hopefully not copying wont fuck me
+                }
+            }
+        }
+    }
 }
 
 /* Given implementation of a BFS rainbow fill. */

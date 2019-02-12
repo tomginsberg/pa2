@@ -11,7 +11,6 @@
 /**
  * stripeColorPicker: a functor that determines the color that should be used
  * given an x and a y coordinate using a stripe pattern.
- *
  */
 class stripeColorPicker : public colorPicker
 {
@@ -30,7 +29,7 @@ class stripeColorPicker : public colorPicker
      * otherwise, it will be filled with white.
      *
      * @param x The x coordinate to pick a color for.
-     * @param y The y coordinat to pick a color for.
+     * @param y The y coordinate to pick a color for.
      * @return The color chosen for (x, y).
      */
     virtual HSLAPixel operator()(int x, int y);

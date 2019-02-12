@@ -11,7 +11,6 @@
 #include "queue.h"
 #include "animation.h"
 
-
 #include "rainbowColorPicker.h" // given as an example
 #include "borderColorPicker.h"
 #include "stripeColorPicker.h"
@@ -134,5 +133,4 @@ namespace filler
     animation fill(PNG& img, int x, int y, colorPicker& fillColor,
                    double tolerance, int frameFreq);
 }
-#include "filler.cpp"
 #endif

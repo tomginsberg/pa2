@@ -16,32 +16,66 @@ struct PVector{
     int x;
     int y;
     PVector(int x, int y) : x{x}, y{y}{};
-    vector<PVector> neighbours(){
+    vector<PVector> neighbours(int width, int height){
         vector<PVector> nb;
         /**
          * UPRIGHT(+x,-y), UP(-y), UPLEFT(-x,-y), LEFT(-x), 
          * DOWNLEFT(-x,+y), DOWN(+y), DOWNRIGHT(+x,+y), RIGHT(+x)
          */
         if (y > 0) {
-            nb.push_back(PVector(x+1,y-1));
-            nb.push_back(PVector(x,y-1));
+            if (x < width - 1) {
+                nb.emplace_back(x + 1, y - 1);
+            }
+            nb.emplace_back(x,y-1);
         }
-        if (x > 0){ 
-            nb.push_back(PVector(x-1, y-1));
-            nb.push_back(PVector(x-1, y));
-            nb.push_back(PVector(x-1, y+1));
+        if (x > 0){
+            if (y > 0) {
+                nb.emplace_back(x - 1, y - 1);
+            }
+            nb.emplace_back(x-1, y);
+            if(y < height - 1) {
+                nb.emplace_back(x-1, y+1);
+            }
         }
-        nb.push_back(PVector(x , y + 1));
-        nb.push_back(PVector(x+1 , y +1));
-        nb.push_back(PVector(x+1 , y));
+        if(y < height - 1) {
+            nb.emplace_back(x, y + 1);
+        }
+        if (x < width - 1 and y < height - 1) {
+            nb.emplace_back(x + 1, y + 1);
+        }
+        if (x < width - 1) {
+            nb.emplace_back(x + 1, y);
+        }
         return nb;
     }
 
-    bool operator==(PVector other){
+    bool operator==(const PVector other) const {
         return this->x == other.x and this->y == other.y;
     }
 
 };
+struct PVectorHasher
+{
+    size_t
+    operator()(const PVector & vec) const
+    {
+        return std::hash<std::string>()(to_string(vec.x)+to_string(vec.y));
+    }
+};
+
+
+namespace std
+{
+    template<>
+    struct hash<PVector>
+    {
+        size_t
+        operator()(const PVector & vec) const
+        {
+            return std::hash<std::string>()(to_string(vec.x)+to_string(vec.y));
+        }
+    };
+}
 
 animation filler::fillStripeDFS(PNG& img, int x, int y, HSLAPixel fillColor,
                                 int stripeSpacing, double tolerance, int frameFreq)
@@ -53,7 +87,7 @@ animation filler::fillStripeDFS(PNG& img, int x, int y, HSLAPixel fillColor,
 animation filler::fillBorderDFS(PNG& img, int x, int y,
                                     HSLAPixel borderColor, double tolerance, int frameFreq)
 {
-    borderColorPicker border(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y)));
+    borderColorPicker border(borderColor, img, tolerance, *img.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y)));
     return fill<Stack>(img, x, y, border, tolerance, frameFreq);
 }
 
@@ -76,7 +110,7 @@ animation filler::fillStripeBFS(PNG& img, int x, int y, HSLAPixel fillColor,
 animation filler::fillBorderBFS(PNG& img, int x, int y,
                                     HSLAPixel borderColor, double tolerance, int frameFreq)
 {
-    borderColorPicker border(borderColor, img, tolerance, img.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y)));
+    borderColorPicker border(borderColor, img, tolerance, *img.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y)));
     return fill<Queue>(img, x, y, border, tolerance, frameFreq);
 }
 
@@ -89,7 +123,7 @@ animation filler::fillRainBFS(PNG& img, int x, int y,
 }
 
 
-//maybe im missing something but it seems like tolerance is useless here, should only be used by the color picker
+//maybe im missing something but it seems like tolerance is useless here, should only be used by the color picker, and only for border
 template <template <class T> class OrderingStructure>
 animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
                        double tolerance, int frameFreq)
@@ -112,8 +146,9 @@ animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
             resCheck = 0;
             anim.addFrame(img);
         }
-
-        for (PVector neighbour : currPos.neighbours()){
+        int width = img.width();
+        int height = img.height();
+        for (PVector neighbour : currPos.neighbours(width, height)){
             //if operator returns the target color and he have not seen the pixel already, mark the pixel as visited and put it in the ordering structure
             if(*img.getPixel(static_cast<unsigned int>(neighbour.x), static_cast<unsigned int>(neighbour.y)) == fillColor.operator()(neighbour.x, neighbour.y)
                         and visited.count(neighbour) == 0){
@@ -122,6 +157,7 @@ animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
             }
         }
     }
+    anim.addFrame(img);
     return anim;
 
 
@@ -193,3 +229,4 @@ animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
  *        it will be the one we test against.
  */
 }
+

@@ -30,3 +30,4 @@ HSLAPixel rainbowColorPicker::nextColor()
     iter++;
     return ret;
 }
+

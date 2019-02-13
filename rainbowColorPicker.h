@@ -28,7 +28,6 @@ class rainbowColorPicker : public colorPicker
      * @return The color chosen for (x, y).
      */
     virtual HSLAPixel operator()(int x, int y);
-
   private:
     HSLAPixel nextColor();
 

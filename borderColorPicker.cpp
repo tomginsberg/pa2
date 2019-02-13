@@ -53,3 +53,4 @@ HSLAPixel borderColorPicker::operator()(int x, int y)
     }
     return *this->im.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y));
 }
+

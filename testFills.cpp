@@ -197,3 +197,19 @@ TEST_CASE("fill::basic rainbow bfs","[weight=1][part=fill]"){
 
 }
 
+TEST_CASE("fill::dom rainbow bfs","[weight=1][part=fill]"){
+
+    PNG img;
+    img.readFromFile("originals/dom.png");
+
+    animation anim;
+    anim = filler::fillRainDFS(img, 30, 25, RAINFREQ,
+                               RAINTOLERANCE/1.7,
+                               5);
+    PNG result = anim.write("images/dom.gif");
+    result.writeToFile("images/dom.png");
+    PNG expected; expected.readFromFile("soln_images/bfsrain.png");
+    REQUIRE(result==expected);
+
+}
+

@@ -122,44 +122,51 @@ animation filler::fillRainBFS(PNG& img, int x, int y,
     return fill<Queue>(img, x, y, a, tolerance, frameFreq);
 }
 
+void pixelModAdd(int& x, int& y, colorPicker& fillColor, int& resCheck, int& frameFreq, animation& anim, PNG& img){
+    HSLAPixel fill = fillColor.operator()(x, y);
+    HSLAPixel* curr = img.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y));
+    if(fill != *curr) {
+        resCheck++;
+        *curr = fill;
+    }
+    if(resCheck == frameFreq){
+        resCheck = 0;
+        anim.addFrame(img);
+    }
+}
 
-//maybe im missing something but it seems like tolerance is useless here, should only be used by the color picker, and only for border
 template <template <class T> class OrderingStructure>
 animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
                        double tolerance, int frameFreq)
 {
     animation anim;
     OrderingStructure<PVector> pos;
-
+    HSLAPixel center = *img.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y));
     unordered_set<PVector> visited;
     int resCheck = 0;
     visited.insert(PVector(x,y));
     pos.add(PVector(x,y));
 
+    //Realized I wasn't adding the first pixel so cpy pasting was a quick fix
+    pixelModAdd(x, y, fillColor, resCheck, frameFreq, anim, img);
+
     while(!pos.isEmpty()){
 
         PVector currPos = pos.remove();
 
-        *img.getPixel(static_cast<unsigned int>(currPos.x), static_cast<unsigned int>(currPos.y)) = fillColor.operator()(currPos.x, currPos.y);
-        resCheck++;
-        if (resCheck == frameFreq){
-            resCheck = 0;
-            anim.addFrame(img);
-        }
         int width = img.width();
         int height = img.height();
         for (PVector neighbour : currPos.neighbours(width, height)){
-            //if operator returns the target color and he have not seen the pixel already, mark the pixel as visited and put it in the ordering structure
-            if(*img.getPixel(static_cast<unsigned int>(neighbour.x), static_cast<unsigned int>(neighbour.y)) == fillColor.operator()(neighbour.x, neighbour.y)
-                        and visited.count(neighbour) == 0){
+            if(visited.count(neighbour) == 0 and
+                    (*img.getPixel(static_cast<unsigned int>(neighbour.x), static_cast<unsigned int>(neighbour.y))).dist(center) < tolerance){
                 visited.insert(neighbour);
                 pos.add(neighbour);
+                pixelModAdd(neighbour.x, neighbour.y, fillColor, resCheck, frameFreq, anim, img);
             }
         }
     }
     anim.addFrame(img);
     return anim;
-
 
     /*
  *
@@ -229,4 +236,3 @@ animation filler::fill(PNG& img, int x, int y, colorPicker& fillColor,
  *        it will be the one we test against.
  */
 }
-

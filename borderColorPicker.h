@@ -49,7 +49,6 @@ class borderColorPicker : public colorPicker
      * @return The color chosen for (x, y).
      */
     virtual HSLAPixel operator()(int x, int y);
-
   private:
     HSLAPixel color; /**< Color used for the grid border. */
     PNG im;

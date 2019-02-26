@@ -10,6 +10,7 @@
 #include "stripeColorPicker.h"
 #include "rainbowColorPicker.h"
 #include "borderColorPicker.h"
+#include "customColorPicker.h"
 
 using namespace std;
 using namespace cs221util;
@@ -197,19 +198,42 @@ TEST_CASE("fill::basic rainbow bfs","[weight=1][part=fill]"){
 
 }
 
-TEST_CASE("fill::dom rainbow bfs","[weight=1][part=fill]"){
+//TEST_CASE("fill::dom rainbow bfs","[weight=1][part=fill]"){
+//
+//    PNG img;
+//    img.readFromFile("originals/dom.png");
+//
+//    animation anim;
+//    anim = filler::fillRainDFS(img, 30, 25, RAINFREQ,
+//                               RAINTOLERANCE/1.7,
+//                               5);
+//    PNG result = anim.write("images/dom.gif");
+//    result.writeToFile("images/dom.png");
+//    PNG expected; expected.readFromFile("soln_images/bfsrain.png");
+//    REQUIRE(result==expected);
+//
+//}
 
-    PNG img;
-    img.readFromFile("originals/dom.png");
-
+TEST_CASE("fill: basic custom bfs","[weight=1][part=fill]"){
+	PNG img;
+	img.readFromFile(SOLIDTESTIMAGE);
+    HSLAPixel px(200., 1.0, 0.5);
+    
     animation anim;
-    anim = filler::fillRainDFS(img, 30, 25, RAINFREQ,
-                               RAINTOLERANCE/1.7,
-                               5);
-    PNG result = anim.write("images/dom.gif");
-    result.writeToFile("images/dom.png");
-    PNG expected; expected.readFromFile("soln_images/bfsrain.png");
-    REQUIRE(result==expected);
-
+    anim = filler::fillCustomBFS(img, SOLIDX, SOLIDY, 89, px, SOLIDTOLERANCE, SOLIDFRAMEFREQ);
+    PNG result = anim.write("images/bfscustom.gif");
+    result.writeToFile("images/bfscustom.png");
+    REQUIRE(true);
 }
-
+    
+TEST_CASE("fill: basic custom dfs","[weight=1][part=fill]"){
+    PNG img;
+    img.readFromFile(SOLIDTESTIMAGE);
+    HSLAPixel px(200., 1.0, 0.5);
+    
+    animation anim;
+    anim = filler::fillCustomDFS(img, SOLIDX, SOLIDY, 89, px, SOLIDTOLERANCE, SOLIDFRAMEFREQ);
+    PNG result = anim.write("images/dfscustom.gif");
+    result.writeToFile("images/dfscustom.png");
+    REQUIRE(true);
+}

@@ -9,9 +9,8 @@
 /* Constructor for the Deque class */
 template <class T>
 Deque<T>::Deque(){
-
-/* your code here */
-
+    this->k2 = 0;
+    this->k1 = 0;
 }
 
 /**
@@ -22,7 +21,13 @@ Deque<T>::Deque(){
 template <class T>
 void Deque<T>::pushR(T const& newItem)
 {
-    this->data.push_back(newItem);
+    if (this->data.size() == static_cast<unsigned int>(k2))
+        this->data.push_back(newItem);
+    else {
+        this->data[k2] = newItem;
+        //this->data.push_back(newItem);
+    }
+    this->k2 += 1;
 }
 
 /**
@@ -36,11 +41,20 @@ void Deque<T>::pushR(T const& newItem)
 template <class T>
 T Deque<T>::popL()
 {
-    T elm = this->data.front();
-    this->data.erase(this->data.begin());
+    T elm = this->data[this->k1];
+    this->k1 += 1;
+    if (this->k2-this->k1 <= this->k1) {
+        vector<T> newData;
+        for (int i = this->k1; i < this->k2; i++) {
+            newData.push_back(data[i]);
+        }
+        this->data = newData;
+        this->k1 = 0;
+        this->k2 = this->data.size();
+    }
     return elm;
-    
 }
+
 /**
  * Removes the object at the right of the Deque, and returns it to the
  * caller.
@@ -50,8 +64,17 @@ T Deque<T>::popL()
 template <class T>
 T Deque<T>::popR()
 {
-    T elm = this->data.back();
-    this->data.pop_back();
+    this->k2 -= 1;
+    T elm = this->data[this->k2];
+    if (this->k2 - this->k1 <= this->k1) {
+        vector<T> newData;
+        for (int i = this->k1; i < this->k2; i++) {
+            newData.push_back(data[i]);
+        }
+        this->data = newData;
+        this->k1 = 0;
+        this->k2 = this->data.size();
+    }
     return elm;
 }
 
@@ -64,7 +87,7 @@ T Deque<T>::popR()
 template <class T>
 T Deque<T>::peekL()
 {
-    return this->data.front();
+    return this->data[k1];
 }
 
 /**
@@ -76,7 +99,7 @@ T Deque<T>::peekL()
 template <class T>
 T Deque<T>::peekR()
 {
-    return this->data.back();
+    return this->data[k2-1];
 }
 
 /**
@@ -87,5 +110,5 @@ T Deque<T>::peekR()
 template <class T>
 bool Deque<T>::isEmpty() const
 {
-    return this->data.empty();
+    return (this->k2 - this->k1 == 0);
 }

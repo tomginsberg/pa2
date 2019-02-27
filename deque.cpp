@@ -25,7 +25,6 @@ void Deque<T>::pushR(T const& newItem)
         this->data.push_back(newItem);
     else {
         this->data[k2] = newItem;
-        //this->data.push_back(newItem);
     }
     this->k2 += 1;
 }
@@ -41,16 +40,16 @@ void Deque<T>::pushR(T const& newItem)
 template <class T>
 T Deque<T>::popL()
 {
-    T elm = this->data[this->k1];
+    T elm = this->data[k1];
     this->k1 += 1;
-    if (this->k2-this->k1 <= this->k1) {
+    if (k2-k1 <= k1) {
         vector<T> newData;
-        for (int i = this->k1; i < this->k2; i++) {
+        for (int i = k1; i < k2; i++) {
             newData.push_back(data[i]);
         }
         this->data = newData;
-        this->k1 = 0;
-        this->k2 = this->data.size();
+        k1 = 0;
+        k2 = this->data.size();
     }
     return elm;
 }
@@ -65,16 +64,18 @@ template <class T>
 T Deque<T>::popR()
 {
     this->k2 -= 1;
-    T elm = this->data[this->k2];
-    if (this->k2 - this->k1 <= this->k1) {
-        vector<T> newData;
-        for (int i = this->k1; i < this->k2; i++) {
-            newData.push_back(data[i]);
-        }
-        this->data = newData;
-        this->k1 = 0;
-        this->k2 = this->data.size();
-    }
+    T elm = this->data.back();
+    this->data.pop_back();
+//    T elm = this->data[k2];
+//    if (k2 - k1 <= k1) {
+//        vector<T> newData;
+//        for (int i = k1; i < k2; i++) {
+//            newData.push_back(data[i]);
+//        }
+//        this->data = newData;
+//        k1 = 0;
+//        k2 = this->data.size();
+//    }
     return elm;
 }
 

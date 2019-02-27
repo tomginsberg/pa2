@@ -112,10 +112,10 @@ namespace filler
         animation fillRainBFS(PNG& img, int x, int y, 
                 long double freq, double tolerance, int frameFreq);
     
-        animation fillCustomDFS(PNG& img, int x, int y, int transition,
-                                HSLAPixel fillColor, double tolerance, int frameFreq);
-        animation fillCustomBFS(PNG& img, int x, int y, int transition,
-                                HSLAPixel fillColor, double tolerance, int frameFreq);
+//        animation fillCustomDFS(PNG& img, int x, int y, int transition,
+//                                HSLAPixel fillColor, double tolerance, int frameFreq);
+//        animation fillCustomBFS(PNG& img, int x, int y, int transition,
+//                                HSLAPixel fillColor, double tolerance, int frameFreq);
     /**
      * Filling function: a general helper that should be invoked by
      * ALL of the public fill functions parameterized by the appropriate 

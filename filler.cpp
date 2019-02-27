@@ -122,19 +122,19 @@ animation filler::fillRainBFS(PNG& img, int x, int y,
     return fill<Queue>(img, x, y, a, tolerance, frameFreq);
 }
 
-animation filler::fillCustomDFS(PNG& img, int x, int y, int transition,
-                                HSLAPixel fillColor, double tolerance, int frameFreq)
-{
-    customColorPicker a(fillColor, transition);
-    return fill<Stack>(img, x, y, a, tolerance, frameFreq);
-}
-
-animation filler::fillCustomBFS(PNG& img, int x, int y, int transition,
-                                HSLAPixel fillColor, double tolerance, int frameFreq)
-{
-    customColorPicker a(fillColor, transition);
-    return fill<Queue>(img, x, y, a, tolerance, frameFreq);
-}
+//animation filler::fillCustomDFS(PNG& img, int x, int y, int transition,
+//                                HSLAPixel fillColor, double tolerance, int frameFreq)
+//{
+//    customColorPicker a(fillColor, transition);
+//    return fill<Stack>(img, x, y, a, tolerance, frameFreq);
+//}
+//
+//animation filler::fillCustomBFS(PNG& img, int x, int y, int transition,
+//                                HSLAPixel fillColor, double tolerance, int frameFreq)
+//{
+//    customColorPicker a(fillColor, transition);
+//    return fill<Queue>(img, x, y, a, tolerance, frameFreq);
+//}
 
 void pixelModAdd(int& x, int& y, colorPicker& fillColor, int& resCheck, int& frameFreq, animation& anim, PNG& img){
     HSLAPixel fill = fillColor.operator()(x, y);

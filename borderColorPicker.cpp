@@ -15,42 +15,22 @@ borderColorPicker::borderColorPicker(HSLAPixel fillColor, PNG & img, double tole
  */
 HSLAPixel borderColorPicker::operator()(int x, int y)
 {
-    /**
-     * We check all pixels within a distance 3 of (x,y) here I call it o. x's indicate the pixels that we need to check
-     * * * x * * *
-     * x x x x x *
-     x x x o x x x
-     * x x x x x *
-     * * * x * * *
-     */
-    int width = this->im.width();
-    int height = this->im.height();
-
-    //auto return color if pixel is within 3 of the border
-
-    if( x - 3 < 0 or x + 3 >= width or y - 3 < 0 or y + 3 >= height) return this->color;
-
-    for (int i = -2; i <= 2; i++) {
-        for(int j = -2; j<= 2; j++) {
-            if (this->im.getPixel(static_cast<unsigned int>(x),
-                                  static_cast<unsigned int>(y))->dist(*this->im.getPixel(
-                    static_cast<unsigned int>(x + i), static_cast<unsigned int>(y + j))) > this->tol) {
-                return this->color;
+    if (x < 3) return this->color;
+    if (im.width() - x <= 3) return this->color;
+    if (y < 3) return this->color;
+    if (im.height() - y <= 3) return this->color;
+    for (int i = x-3; i<=x+3; i++) {
+        for (int j = y-3; j<=y+3; j++) {
+            if (pow(i-x, 2) + pow(j-y, 2) <= pow(3, 2)) {
+                if ((*(im.getPixel(i, j))).dist(ctr) >= tol)
+                {
+                    return this->color;
+                }
             }
         }
     }
-    for (int i = -1; i <= 1; i++) {
-        if (this->im.getPixel(static_cast<unsigned int>(x),
-                              static_cast<unsigned int>(y))->dist(*this->im.getPixel(
-                static_cast<unsigned int>(x + 3 * i), static_cast<unsigned int>(y))) > this->tol) {
-            return this->color;
-        }
-        if (this->im.getPixel(static_cast<unsigned int>(x),
-                              static_cast<unsigned int>(y))->dist(*this->im.getPixel(
-                static_cast<unsigned int>(x), static_cast<unsigned int>(y + 3*i))) > this->tol) {
-            return this->color;
-        }
-    }
-    return *this->im.getPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y));
+    
+    return *(im.getPixel(x,y));
+    
 }
 
